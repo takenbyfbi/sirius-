@@ -24,7 +24,7 @@ async function checkUpdateAndRun() {
         } catch {}
         if (currentData !== data) {
           fs.writeFileSync(LOCAL_SCRIPT, data);
-          console.log("script updated restart to use it");
+          console.log("Script actualizat, repornesc...");
           spawn(process.argv[0], [LOCAL_SCRIPT], { stdio: "inherit" });
           process.exit(0);
         } else {
