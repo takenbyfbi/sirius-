@@ -43,7 +43,7 @@ async function checkUpdateAndRun() {
     const client = new Discord.Client();
 
     let mata1 = false;
-    let mata2 = 1000; // implicit 1 secundă
+    let mata2 = 1000; 
 
     client.on("ready", () => {
       console.clear();
