@@ -33,10 +33,10 @@ async function checkUpdateAndRun() {
           console.log("Update done restart sirius...");
 
           spawn(process.argv[0], [LOCAL_SCRIPT], { stdio: "inherit" });
-          process.exit(0); 
+          process.exit(0);
         } else {
           console.log("No update found.");
-          resolve(); 
+          resolve();
         }
       });
     }).on("error", (err) => {
@@ -50,65 +50,73 @@ async function checkUpdateAndRun() {
   try {
     await checkUpdateAndRun();
 
-    const settings = JSON.parse(fs.readFileSync("settings.json", "utf8"));
-    const client = new Discord.Client();
+    const tokens = fs.readFileSync("tokans.txt", "utf8").split(/\r?\n/).filter(t => t.trim() !== "");
+    if (tokens.length === 0) throw new Error("No tokens found in tokans.txt");
 
     let mata1 = false;
     let mata2 = 1000;
 
-    client.on("ready", () => {
-      console.clear();
-      console.log(`scriptulet on ${client.user.tag}`);
-    });
+    const clients = tokens.map(token => {
+      const client = new Discord.Client();
 
-    client.on("messageCreate", async (message) => {
-      if (message.author.id !== client.user.id) return;
+      client.on("ready", () => {
+        console.clear();
+        console.log(`scriptulet on ${client.user.tag}`);
+      });
 
-      const full = message.content.trim();
-      const content = full.toLowerCase();
+      client.on("messageCreate", async (message) => {
+        if (message.author.id !== client.user.id) return;
 
-      if (content === "!cpu") {
-        const cpuModel = os.cpus()[0].model;
-        await message.channel.send(`cpu: ${cpuModel}`);
-      } else if (content === "!ram") {
-        const totalMem = (os.totalmem() / 1024 / 1024).toFixed(2);
-        await message.channel.send(`ram: ${totalMem} MB`);
-      } else if (content.startsWith("!delay")) {
-        const parts = full.split(" ");
-        if (parts.length === 2) {
-          const sec = parseFloat(parts[1]);
-          if (!isNaN(sec) && sec >= 0) {
-            mata2 = sec * 1000;
-          }
-        }
-      } else if (content === "!start") {
-        if (mata1) return;
-        mata1 = true;
-        const lines = fs.readFileSync("notepad.txt", "utf8").split(/\r?\n/);
-        for (const line of lines) {
-          if (!mata1) break;
-          if (line.trim() !== "") {
-            try {
-              await message.channel.send(line);
-            } catch {
-              mata1 = false;
-              break;
+        const full = message.content.trim();
+        const content = full.toLowerCase();
+
+        if (content === "!cpu") {
+          const cpuModel = os.cpus()[0].model;
+          await message.channel.send(`cpu: ${cpuModel}`);
+        } else if (content === "!ram") {
+          const totalMem = (os.totalmem() / 1024 / 1024).toFixed(2);
+          await message.channel.send(`ram: ${totalMem} MB`);
+        } else if (content.startsWith("!delay")) {
+          const parts = full.split(" ");
+          if (parts.length === 2) {
+            const sec = parseFloat(parts[1]);
+            if (!isNaN(sec) && sec >= 0) {
+              mata2 = sec * 1000;
             }
-            await new Promise(res => setTimeout(res, mata2));
           }
+        } else if (content === "!start") {
+          if (mata1) return;
+          mata1 = true;
+          const lines = fs.readFileSync("notepad.txt", "utf8").split(/\r?\n/);
+          for (const line of lines) {
+            if (!mata1) break;
+            if (line.trim() !== "") {
+              try {
+                await message.channel.send(line);
+              } catch {
+                mata1 = false;
+                break;
+              }
+              await new Promise(res => setTimeout(res, mata2));
+            }
+          }
+          mata1 = false;
+        } else if (content === "!stop") {
+          mata1 = false;
+        } else if (content === "!help") {
+          try {
+            const helpText = fs.readFileSync("help.txt", "utf8");
+            await message.channel.send(helpText);
+          } catch {}
         }
-        mata1 = false;
-      } else if (content === "!stop") {
-        mata1 = false;
-      } else if (content === "!help") {
-        try {
-          const helpText = fs.readFileSync("help.txt", "utf8");
-          await message.channel.send(helpText);
-        } catch {}
-      }
-    });
+      });
 
-    client.login(settings.token);
+      client.login(token).catch(() => {
+        console.log("Failed to login with token:", token);
+      });
+
+      return client;
+    });
 
   } catch (e) {
     console.error("Fatal error:", e);
