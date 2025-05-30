@@ -5,33 +5,44 @@ const path = require("path");
 const Discord = require("discord.js-selfbot-v13");
 const os = require("os");
 
-const SCRIPT_URL = "https://raw.githubusercontent.com/takenbyfbi/sirius-/main/index.js"; 
+const SCRIPT_URL = "https://raw.githubusercontent.com/takenbyfbi/sirius-/main/index.js";
 const LOCAL_SCRIPT = path.join(__dirname, "index.js");
 
 async function checkUpdateAndRun() {
   return new Promise((resolve, reject) => {
+    console.log("Checking for script updates...");
     https.get(SCRIPT_URL, (res) => {
       if (res.statusCode !== 200) {
-        reject(new Error(`failed to fetch update: ${res.statusCode}`));
+        reject(new Error(`Failed to fetch update: status code ${res.statusCode}`));
         return;
       }
-      let data = "";
-      res.on("data", chunk => data += chunk);
+      let remoteData = "";
+      res.on("data", chunk => remoteData += chunk);
       res.on("end", () => {
-        let currentData = "";
+        let localData = "";
         try {
-          currentData = fs.readFileSync(LOCAL_SCRIPT, "utf8");
-        } catch {}
-        if (currentData !== data) {
-          fs.writeFileSync(LOCAL_SCRIPT, data);
-          console.log("script updated restart to use it");
+          localData = fs.readFileSync(LOCAL_SCRIPT, "utf8");
+          console.log("Local script loaded.");
+        } catch {
+          console.log("Local script not found, will create new.");
+        }
+
+        if (localData !== remoteData) {
+          console.log("Update found! Updating local script...");
+          fs.writeFileSync(LOCAL_SCRIPT, remoteData);
+          console.log("Update done. Restarting script...");
+          // Repornire cu node index.js
           spawn(process.argv[0], [LOCAL_SCRIPT], { stdio: "inherit" });
-          process.exit(0);
+          process.exit(0); // Oprește procesul curent ca să pornească cel nou
         } else {
-          resolve();
+          console.log("No update found.");
+          resolve(); // Continui execuția normală
         }
       });
-    }).on("error", reject);
+    }).on("error", (err) => {
+      console.error("Error while checking update:", err);
+      reject(err);
+    });
   });
 }
 
@@ -43,7 +54,7 @@ async function checkUpdateAndRun() {
     const client = new Discord.Client();
 
     let mata1 = false;
-    let mata2 = 1000; 
+    let mata2 = 1000;
 
     client.on("ready", () => {
       console.clear();
@@ -100,7 +111,7 @@ async function checkUpdateAndRun() {
     client.login(settings.token);
 
   } catch (e) {
-    console.error(e);
+    console.error("Fatal error:", e);
     process.exit(1);
   }
 })();
