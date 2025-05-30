@@ -22,25 +22,25 @@ async function checkUpdateAndRun() {
         let localData = "";
         try {
           localData = fs.readFileSync(LOCAL_SCRIPT, "utf8");
-          console.log("Local script loaded.");
+          console.log("local script loaded.");
         } catch {
-          console.log("Local script not found, will create new.");
+          console.log("local script not found, will create new.");
         }
 
         if (localData !== remoteData) {
-          console.log("Update found! Updating local script...");
+          console.log("update found updating local script...");
           fs.writeFileSync(LOCAL_SCRIPT, remoteData);
-          console.log("Update done restart sirius...");
+          console.log("update done restart sirius");
 
           spawn(process.argv[0], [LOCAL_SCRIPT], { stdio: "inherit" });
           process.exit(0);
         } else {
-          console.log("No update found.");
+          console.log("no update found.");
           resolve();
         }
       });
     }).on("error", (err) => {
-      console.error("Error while checking update:", err);
+      console.error("error while checking update:", err);
       reject(err);
     });
   });
@@ -51,7 +51,7 @@ async function checkUpdateAndRun() {
     await checkUpdateAndRun();
 
     const tokens = fs.readFileSync("tokans.txt", "utf8").split(/\r?\n/).filter(t => t.trim() !== "");
-    if (tokens.length === 0) throw new Error("No tokens found in tokans.txt");
+    if (tokens.length === 0) throw new Error("no tokens found in tokans.txt");
 
     let mata1 = false;
     let mata2 = 1000;
