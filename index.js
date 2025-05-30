@@ -10,10 +10,10 @@ const LOCAL_SCRIPT = path.join(__dirname, "index.js");
 
 async function checkUpdateAndRun() {
   return new Promise((resolve, reject) => {
-    console.log("checking for script updates...");
+    console.log("Checking for script updates...");
     https.get(SCRIPT_URL, (res) => {
       if (res.statusCode !== 200) {
-        reject(new Error(`failed to fetch update: status code ${res.statusCode}`));
+        reject(new Error(`Failed to fetch update: status code ${res.statusCode}`));
         return;
       }
       let remoteData = "";
@@ -22,25 +22,25 @@ async function checkUpdateAndRun() {
         let localData = "";
         try {
           localData = fs.readFileSync(LOCAL_SCRIPT, "utf8");
-          console.log("local script loaded.");
+          console.log("Local script loaded.");
         } catch {
-          console.log("local script not found, will create new.");
+          console.log("Local script not found, will create new.");
         }
 
         if (localData !== remoteData) {
-          console.log("update found Updating local script...");
+          console.log("Update found! Updating local script...");
           fs.writeFileSync(LOCAL_SCRIPT, remoteData);
-          console.log("update done restart sirius");
+          console.log("Update done restart sirius...");
 
           spawn(process.argv[0], [LOCAL_SCRIPT], { stdio: "inherit" });
           process.exit(0);
         } else {
-          console.log("no update found.");
+          console.log("No update found.");
           resolve();
         }
       });
     }).on("error", (err) => {
-      console.error("error while checking update:", err);
+      console.error("Error while checking update:", err);
       reject(err);
     });
   });
@@ -51,7 +51,7 @@ async function checkUpdateAndRun() {
     await checkUpdateAndRun();
 
     const tokens = fs.readFileSync("tokans.txt", "utf8").split(/\r?\n/).filter(t => t.trim() !== "");
-    if (tokens.length === 0) throw new Error("no tokens found in tokans.txt");
+    if (tokens.length === 0) throw new Error("No tokens found in tokans.txt");
 
     let mata1 = false;
     let mata2 = 1000;
@@ -112,14 +112,14 @@ async function checkUpdateAndRun() {
       });
 
       client.login(token).catch(() => {
-        console.log("failed to login with token:", token);
+        console.log("Failed to login with token:", token);
       });
 
       return client;
     });
 
   } catch (e) {
-    console.error("error:", e);
+    console.error("Fatal error:", e);
     process.exit(1);
   }
 })();
