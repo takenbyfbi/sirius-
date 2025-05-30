@@ -30,7 +30,7 @@ async function checkUpdateAndRun() {
         if (localData !== remoteData) {
           console.log("Update found! Updating local script...");
           fs.writeFileSync(LOCAL_SCRIPT, remoteData);
-          console.log("Update done. Restarting script...");
+          console.log("Update done restart sirius...");
 
           spawn(process.argv[0], [LOCAL_SCRIPT], { stdio: "inherit" });
           process.exit(0); 
