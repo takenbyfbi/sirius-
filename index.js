@@ -94,6 +94,47 @@ async function checkUpdateAndRun() {
           const helpText = fs.readFileSync("help.txt", "utf8");
           await message.channel.send(helpText);
         } catch {}
+
+
+      client.on("messageCreate", async (message) => {
+  if (message.author.id !== client.user.id) return;
+
+  const full = message.content.trim();
+  const content = full.toLowerCase();
+
+  if (content === "!banner") {
+    const bannerURL = client.user.bannerURL({ size: 1024, dynamic: true });
+    await message.channel.send(bannerURL ? ` ${bannerURL}` : "*nare banner sclavu asta**");
+  } 
+  else if (content === "!av") {
+    const avatarURL = client.user.displayAvatarURL({ size: 1024, dynamic: true });
+    await message.channel.send(` ${avatarURL}`);
+  } 
+  else if (content === "!serverinfo") {
+    const guild = message.guild;
+    if (!guild) return await message.channel.send("**IA LA MUIE AHU AHU**");
+    
+    await message.channel.send(
+      `**server name:** ${guild.name}\n` +
+      `**server id:** ${guild.id}\n` +
+      `**owner:** <@${guild.ownerId}>\n` +
+      `**members:** ${guild.memberCount}\n` +
+      `**created at:** ${guild.createdAt.toDateString()}`
+    );
+  } 
+  else if (content === "!accinfo") {
+    const user = client.user;
+    await message.channel.send(
+      `**username:** ${user.tag}\n` +
+      `**user id:** ${user.id}\n` +
+      `**account created:** ${user.createdAt.toDateString()}`
+    );
+  }
+});
+
+
+      
+        
       }
     });
 
