@@ -112,7 +112,7 @@ async function checkUpdateAndRun() {
       });
 
       client.login(token).catch(() => {
-        console.log("Failed to login with token:", token);
+        console.log("failed to login with token:", token);
       });
 
       return client;
