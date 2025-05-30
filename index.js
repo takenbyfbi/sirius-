@@ -31,12 +31,12 @@ async function checkUpdateAndRun() {
           console.log("Update found! Updating local script...");
           fs.writeFileSync(LOCAL_SCRIPT, remoteData);
           console.log("Update done. Restarting script...");
-          // Repornire cu node index.js
+
           spawn(process.argv[0], [LOCAL_SCRIPT], { stdio: "inherit" });
-          process.exit(0); // Oprește procesul curent ca să pornească cel nou
+          process.exit(0); 
         } else {
           console.log("No update found.");
-          resolve(); // Continui execuția normală
+          resolve(); 
         }
       });
     }).on("error", (err) => {
