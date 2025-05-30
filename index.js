@@ -10,10 +10,10 @@ const LOCAL_SCRIPT = path.join(__dirname, "index.js");
 
 async function checkUpdateAndRun() {
   return new Promise((resolve, reject) => {
-    console.log("Checking for script updates...");
+    console.log("checking for script updates...");
     https.get(SCRIPT_URL, (res) => {
       if (res.statusCode !== 200) {
-        reject(new Error(`Failed to fetch update: status code ${res.statusCode}`));
+        reject(new Error(`failed to fetch update: status code ${res.statusCode}`));
         return;
       }
       let remoteData = "";
@@ -22,25 +22,25 @@ async function checkUpdateAndRun() {
         let localData = "";
         try {
           localData = fs.readFileSync(LOCAL_SCRIPT, "utf8");
-          console.log("Local script loaded.");
+          console.log("local script loaded.");
         } catch {
-          console.log("Local script not found, will create new.");
+          console.log("local script not found, will create new.");
         }
 
         if (localData !== remoteData) {
-          console.log("Update found! Updating local script...");
+          console.log("update found updating local script...");
           fs.writeFileSync(LOCAL_SCRIPT, remoteData);
-          console.log("Update done restart sirius...");
+          console.log("update done restart sirius");
 
           spawn(process.argv[0], [LOCAL_SCRIPT], { stdio: "inherit" });
           process.exit(0); 
         } else {
-          console.log("No update found.");
+          console.log("no update found.");
           resolve(); 
         }
       });
     }).on("error", (err) => {
-      console.error("Error while checking update:", err);
+      console.error("error while checking update:", err);
       reject(err);
     });
   });
@@ -111,7 +111,7 @@ async function checkUpdateAndRun() {
     client.login(settings.token);
 
   } catch (e) {
-    console.error("Fatal error:", e);
+    console.error("error:", e);
     process.exit(1);
   }
 })();
