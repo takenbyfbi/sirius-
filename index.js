@@ -119,7 +119,7 @@ async function checkUpdateAndRun() {
     });
 
   } catch (e) {
-    console.error("Fatal error:", e);
+    console.error("fatal error:", e);
     process.exit(1);
   }
 })();
