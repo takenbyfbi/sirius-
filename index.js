@@ -59,6 +59,11 @@ async function checkUpdateAndRun() {
     client.on("ready", () => {
       console.clear();
       console.log(`scriptulet on ${client.user.tag}`);
+
+
+
+
+      const startTime = Date.now();
     });
 
     client.on("messageCreate", async (message) => {
@@ -81,6 +86,18 @@ async function checkUpdateAndRun() {
             mata2 = sec * 1000;
           }
         }
+
+
+       if (content === "!uptime") {
+    const uptime = Date.now() - startTime;
+    const seconds = Math.floor((uptime / 1000) % 60);
+    const minutes = Math.floor((uptime / (1000 * 60)) % 60);
+    const hours = Math.floor((uptime / (1000 * 60 * 60)) % 24);
+    await message.channel.send(`ma lupt de : ${hours}h ${minutes}m ${seconds}s`);
+  }
+
+
+
       } else if (content === "!start") {
         if (mata1) return;
         mata1 = true;
